@@ -1,5 +1,7 @@
 # Taskboard
 
+Онлайн приложение: **https://svilen-taskboard.netlify.app**
+
 Taskboard е приложение за лични проекти и задачи, разработено от Codex от нулата за курсовата работа по Software Technologies with AI. Кодът в тази папка е независим от по-стария прототип `taskboard`, създаден с Copilot. Не са копирани негови source файлове или SQL migrations.
 
 ## Какво прави
@@ -83,7 +85,7 @@ where user_id = '<USER_UUID>'::uuid;
 
 Не задавай роля чрез signup metadata. Всеки нов потребител получава `user`, независимо какво е изпратил браузърът.
 
-В Supabase Auth → URL Configuration задай Site URL `https://svilen-taskboard-codex.tameshell.chatgpt.site` и добави Redirect URL `https://svilen-taskboard-codex.tameshell.chatgpt.site/login.html`. За локална разработка добави `http://127.0.0.1:5180/login.html`. Приложението изпраща точния login адрес при signup и приема session и при включено email потвърждение.
+Текущата Netlify версия влиза веднага след signup, защото Confirm email е изключено. Ако по-късно се включат email confirmations, в Supabase Auth → URL Configuration задай Site URL `https://svilen-taskboard.netlify.app` и добави Redirect URL `https://svilen-taskboard.netlify.app/login.html`. За локална разработка добави `http://127.0.0.1:5180/login.html`. Приложението изпраща login адреса на текущия origin при signup.
 
 Публични frontend променливи:
 
@@ -124,13 +126,24 @@ erDiagram
 
 ## Публикуване
 
-`npm run build` генерира `dist/`, готов за static hosting. На Netlify/Vercel използвай build command `npm run build`, output directory `dist` и същите две публични променливи при build. HTML routes не изискват SPA catch-all rewrite. Не качвай само source папката без Vite build.
+Продукционната версия е публикувана в Netlify: https://svilen-taskboard.netlify.app. Проектът е `svilen-taskboard`, ID `dc3f5a3d-cf18-41cb-9be3-52af50398c04`. Student акаунтът е свързан чрез официалния Netlify CLI.
 
-Sites deployment се управлява с `.openai/hosting.json`. По подразбиране първата Sites публикация е частна за собственика. Това не е публичен адрес за преподавател, докато достъпът не бъде настроен подходящо.
+`netlify.toml` задава build `npm run build`, publish directory `dist`, Node 24 и отделни правила за деветте адреса без `.html`. Всеки адрес зарежда собствен HTML entry. Непознатите адреси връщат 404. Няма SPA catch-all.
+
+Двете `VITE_SUPABASE_*` публични променливи са зададени и в Netlify. За следващо ръчно публикуване:
+
+```sh
+npm ci
+npm test
+npm run build
+npx netlify-cli@27.16.1 deploy --site svilen-taskboard --dir dist --no-build --prod
+```
+
+Текущото публикуване е ръчно; Git continuous deployment още не е свързан. `.netlify/` е игнориран от Git. Старият Sites preview е запазен частен и не е адресът за предаване.
 
 ## Състояние и оставаща работа
 
-Демонстрационният поток работи и е проверен в браузъра. SQL migration и ключовите правила за достъп са проверени с PostgreSQL чрез PGlite с моделирани `auth` и `storage` schemas. Migration е приложена и в реалния студентски Supabase, а проверката му за сигурност връща празен списък с проблеми. Приложението използва неговия project URL и активен publishable key през игнорирания `.env` файл.
+Демонстрационният и реалният облачен поток са проверени през браузъра. 13 автоматични теста покриват логиката, migrations, достъпа и безопасното връщане след login. Migration history е синхронизирана с реалния студентски Supabase. Няма нови DB/Storage advisories; Auth има предупреждение за изключена Leaked Password Protection. Приложението използва project URL и publishable key през игнорирания `.env` файл.
 
 Codex MCP OAuth входът е успешен. Директната MCP връзка работи. Проверени са реален вход с два app акаунта, project/task CRUD, подреждане, cloud upload/download и отказ на достъп до чужди данни. По изричен избор на студента Alex е admin, Boyan е user. Admin достъпът е проверен през Auth, Data и Storage API. Отделен файл `docs/verification.md` съдържа проверените потоци и ограниченията на проверката.
 
