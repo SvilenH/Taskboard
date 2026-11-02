@@ -112,6 +112,8 @@ create policy tb_attachments_read on public.tb_attachments for select to authent
 create policy tb_attachments_insert on public.tb_attachments for insert to authenticated with check(uploaded_by = (select auth.uid()) and private.tb_project_access(project_id));
 create policy tb_attachments_delete on public.tb_attachments for delete to authenticated using(private.tb_project_access(project_id));
 
+-- Reset inherited/default grants before granting the specific allowed columns.
+revoke all on public.tb_profiles,public.tb_user_roles,public.tb_projects,public.tb_stages,public.tb_tasks,public.tb_attachments from public,anon,authenticated;
 grant select on public.tb_profiles,public.tb_user_roles,public.tb_projects,public.tb_stages,public.tb_tasks,public.tb_attachments to authenticated;
 grant update(display_name) on public.tb_profiles to authenticated;
 grant insert,delete on public.tb_projects,public.tb_tasks,public.tb_attachments to authenticated;

@@ -59,7 +59,7 @@ export const demo = {
       const task = state.tasks.find(t => t.id === id); if (!task || task.project_id !== input.project_id) throw new Error('Задачата не е намерена.');
       if (task.stage_id !== values.stage_id) state.tasks = reorderTask(state.tasks, state.stages, id, values.stage_id, state.tasks.filter(t => t.stage_id === values.stage_id).length);
       Object.assign(state.tasks.find(t => t.id === id), values);
-    } else { id = crypto.randomUUID(); state.tasks.push({ ...values, id, project_id: input.project_id, position: state.tasks.filter(t => t.stage_id === values.stage_id).length, created_by: demoUser.id, created_at: new Date().toISOString() }); }
+    } else { id = crypto.randomUUID(); state.tasks.push({ ...values, id, project_id: input.project_id, position: Math.max(-1, ...state.tasks.filter(t => t.stage_id === values.stage_id).map(t => t.position)) + 1, created_by: demoUser.id, created_at: new Date().toISOString() }); }
     write(state); return id;
   },
   async moveTask(id, stage, position) { const state = read(); state.tasks = reorderTask(state.tasks, state.stages, id, stage, position); write(state); },
