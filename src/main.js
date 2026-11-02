@@ -20,10 +20,10 @@ async function initialize() {
   ctx.refresh = async () => { ctx.data = await load(); };
   layout(ctx, page);
   if (supabase && !isDemo()) supabase.auth.onAuthStateChange((event, next) => { if (event === 'SIGNED_OUT' || (next && next.user.id !== ctx.user.id)) location.replace('/login.html'); });
-  if (page === 'admin' && !ctx.admin) { document.querySelector('#page').innerHTML = '<h1>Нямаш достъп до тази страница</h1><p>Администрацията е достъпна само за администратори.</p><a href="/dashboard.html" class="btn btn-primary">Към обзора</a>'; return; }
+  if (page === 'admin' && !ctx.admin) { document.querySelector('#page').innerHTML = '<h1>You don’t have access to this page</h1><p>This page is available to administrators only.</p><a href="/dashboard.html" class="btn btn-primary">Go to overview</a>'; return; }
   await module.mount(ctx); paintIcons();
 }
 initialize().catch(error => {
-  document.querySelector('#app').innerHTML = `<main class="fatal-error"><span class="brand-symbol">!</span><h1>Не успяхме да заредим пространството</h1><p>${escape(error.message)}</p><p>Данните ти не са променени. При нова облачна база първо трябва да се приложат SQL migrations.</p><button class="btn btn-primary" id="retry">Опитай отново</button> <a class="btn btn-light" href="/">Начална страница</a></main>`;
+  document.querySelector('#app').innerHTML = `<main class="fatal-error"><span class="brand-symbol">!</span><h1>We couldn’t load your workspace</h1><p>${escape(error.message)}</p><p>Your data has not been changed. Please try again in a moment.</p><button class="btn btn-primary" id="retry">Try again</button> <a class="btn btn-light" href="/">Home</a></main>`;
   document.querySelector('#retry').addEventListener('click', () => location.reload());
 });

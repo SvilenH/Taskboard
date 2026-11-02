@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { PGlite } from '@electric-sql/pglite';
 const owner='10000000-0000-0000-0000-000000000001', outsider='10000000-0000-0000-0000-000000000002';
 test('migration, RPC ordering, constraints and RLS work in PostgreSQL', async t => {
@@ -14,7 +14,10 @@ test('migration, RPC ordering, constraints and RLS work in PostgreSQL', async t 
       create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text,name text);
       alter table storage.objects enable row level security; grant select,insert,delete on storage.objects to authenticated;
       alter default privileges in schema public grant all on tables to authenticated,anon;`);
-    await db.exec(await readFile(new URL('../supabase/migrations/20261102094635_create_codex_taskboard.sql', import.meta.url),'utf8'));
+    const migrations = new URL('../supabase/migrations/', import.meta.url);
+    for (const file of (await readdir(migrations)).filter(name => name.endsWith('.sql')).sort()) {
+      await db.exec(await readFile(new URL(file, migrations), 'utf8'));
+    }
     await db.query(`insert into auth.users values($1,'owner@example.invalid','{"display_name":"Owner","role":"admin"}'),($2,'outsider@example.invalid','{}')`,[owner,outsider]);
     assert.equal((await db.query(`select role from public.tb_user_roles where user_id=$1`,[owner])).rows[0].role,'user','signup metadata must not grant admin');
     const asUser = async id => { await db.exec('reset role'); await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]); await db.exec('set role authenticated'); };
@@ -23,6 +26,7 @@ test('migration, RPC ordering, constraints and RLS work in PostgreSQL', async t 
     const project2=(await db.query(`select public.tb_create_project('Two','','blue') id`)).rows[0].id;
     const stages=(await db.query(`select * from tb_stages where project_id=$1 order by position`,[project])).rows;
     assert.equal(stages.length,3);
+    assert.deepEqual(stages.map(stage => stage.name), ['To do', 'In progress', 'Done']);
     const makeTask=async name=>(await db.query(`select tb_save_task(null,$1,$2,$3,'','medium',null) id`,[project,stages[0].id,name])).rows[0].id;
     const one=await makeTask('First'),two=await makeTask('Second'),three=await makeTask('Third');
     await db.query('select tb_move_task($1,$2,0)',[three,stages[0].id]);
@@ -30,7 +34,7 @@ test('migration, RPC ordering, constraints and RLS work in PostgreSQL', async t 
     await db.query('select tb_move_task($1,$2,0)',[one,stages[2].id]);
     assert.deepEqual((await db.query('select position from tb_tasks where stage_id=$1 order by position',[stages[0].id])).rows.map(t=>t.position),[0,1]);
     const foreign=(await db.query('select id from tb_stages where project_id=$1 order by position',[project2])).rows[0].id;
-    await assert.rejects(db.query('select tb_move_task($1,$2,0)',[one,foreign]));
+    await assert.rejects(db.query('select tb_move_task($1,$2,0)',[one,foreign]), /The column belongs to a different project/);
     await assert.rejects(db.query('update tb_tasks set stage_id=$1 where id=$2',[foreign,one]));
     await assert.rejects(db.query('update tb_projects set owner_id=$1 where id=$2',[outsider,project]));
     const object=`${project}/${one}/sample`;

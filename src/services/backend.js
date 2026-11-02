@@ -8,7 +8,7 @@ export const supabase = url && key ? createClient(url, key) : null;
 export const isDemo = () => sessionStorage.getItem('taskboard-demo') === 'yes';
 export function startDemo() { sessionStorage.setItem('taskboard-demo', 'yes'); location.href = '/dashboard.html'; }
 export function leaveDemo() { sessionStorage.removeItem('taskboard-demo'); location.href = '/'; }
-function client() { if (!supabase) throw new Error('Облачната връзка още не е настроена. Можеш да разгледаш демото от началната страница.'); return supabase; }
+function client() { if (!supabase) throw new Error('The cloud connection is not configured yet. You can explore the demo from the home page.'); return supabase; }
 async function result(request) { const { data, error } = await request; if (error) throw new Error(error.message); return data; }
 async function all(table) {
   const data = []; let offset = 0;
@@ -69,4 +69,4 @@ export async function deleteAttachment(attachment) {
   await result(client().storage.from('tb-attachments').remove([attachment.storage_path]));
   await result(client().from('tb_attachments').delete().eq('id', attachment.id).select('id').single());
 }
-export async function setRole(user_id, role) { if (isDemo()) throw new Error('Демо акаунтът е фиксиран. Ролите се управляват в облачната версия.'); return result(client().rpc('tb_set_role', { p_user: user_id, p_role: role })); }
+export async function setRole(user_id, role) { if (isDemo()) throw new Error('The demo account is fixed. Manage roles in the cloud version.'); return result(client().rpc('tb_set_role', { p_user: user_id, p_role: role })); }
