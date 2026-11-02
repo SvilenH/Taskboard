@@ -7,3 +7,4 @@ dist/
 tmp/
 .DS_Store
 .openai/site-workflow/
+.netlify/

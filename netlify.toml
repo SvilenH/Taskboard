@@ -1,0 +1,52 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+# Each route serves its own HTML entry. Unknown routes keep Netlify's 404.
+[[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/register"
+  to = "/register.html"
+  status = 200
+
+[[redirects]]
+  from = "/dashboard"
+  to = "/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/projects"
+  to = "/projects.html"
+  status = 200
+
+[[redirects]]
+  from = "/project-edit"
+  to = "/project-edit.html"
+  status = 200
+
+[[redirects]]
+  from = "/board"
+  to = "/board.html"
+  status = 200
+
+[[redirects]]
+  from = "/tasks"
+  to = "/tasks.html"
+  status = 200
+
+[[redirects]]
+  from = "/files"
+  to = "/files.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
