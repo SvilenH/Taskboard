@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
 import { PGlite } from '@electric-sql/pglite';
 const owner='10000000-0000-0000-0000-000000000001', outsider='10000000-0000-0000-0000-000000000002';
-test('migration, RPC ordering, constraints and RLS work in PostgreSQL', async t => {
+for (const legacyPolicies of [false, true]) test(`migration, RPC ordering, constraints and RLS (legacy Storage policies: ${legacyPolicies})`, async t => {
   const db = new PGlite();
   try {
     await db.exec(`create role anon; create role authenticated; create schema auth; create schema storage;
@@ -14,6 +14,19 @@ test('migration, RPC ordering, constraints and RLS work in PostgreSQL', async t 
       create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text,name text);
       alter table storage.objects enable row level security; grant select,insert,delete on storage.objects to authenticated;
       alter default privileges in schema public grant all on tables to authenticated,anon;`);
+    if (legacyPolicies) {
+      // Reproduce the actual cloud conflict without granting the revoked helpers.
+      await db.exec(`create function public.is_workspace_member(uuid) returns boolean language sql as 'select false';
+        create function public.is_workspace_admin(uuid) returns boolean language sql as 'select false';
+        revoke all on function public.is_workspace_member(uuid),public.is_workspace_admin(uuid) from public,authenticated,anon;
+        create function storage.foldername(text) returns text[] language sql as 'select string_to_array($1,''/'')';
+        create policy task_attachments_storage_select on storage.objects for select to authenticated
+          using(bucket_id='task-attachments' and public.is_workspace_member(((storage.foldername(name))[1])::uuid));
+        create policy task_attachments_storage_insert on storage.objects for insert to authenticated
+          with check(bucket_id='task-attachments' and public.is_workspace_member(((storage.foldername(name))[1])::uuid));
+        create policy task_attachments_storage_delete on storage.objects for delete to authenticated
+          using(bucket_id='task-attachments' and public.is_workspace_admin(((storage.foldername(name))[1])::uuid));`);
+    }
     const migrations = new URL('../supabase/migrations/', import.meta.url);
     for (const file of (await readdir(migrations)).filter(name => name.endsWith('.sql')).sort()) {
       await db.exec(await readFile(new URL(file, migrations), 'utf8'));
@@ -40,6 +53,10 @@ test('migration, RPC ordering, constraints and RLS work in PostgreSQL', async t 
     const object=`${project}/${one}/sample`;
     await db.query(`insert into storage.objects(bucket_id,name) values('tb-attachments',$1)`,[object]);
     assert.equal((await db.query('select * from storage.objects')).rows.length,1);
+    if (legacyPolicies) {
+      await assert.rejects(db.query('select public.is_workspace_member($1)',[project]), /permission denied/);
+      await assert.rejects(db.query(`insert into storage.objects(bucket_id,name) values('task-attachments',$1)`,[object]), /permission denied/);
+    }
     await asUser(outsider);
     assert.equal((await db.query('select * from tb_projects')).rows.length,0);
     assert.equal((await db.query('select * from tb_tasks')).rows.length,0);

@@ -2,7 +2,7 @@
 
 ## Автоматизирани проверки
 
-`npm test`: 10 успешни теста. Интеграционният тест изпълнява всички migrations по ред в PGlite PostgreSQL с тестови Auth/Storage schemas и роли.
+`npm test`: 11 успешни теста. Интеграционният тест изпълнява всички migrations по ред в PGlite PostgreSQL с тестови Auth/Storage schemas и роли, както на чиста база, така и със старите Storage policies и отнети function grants.
 
 Проверява се: normal signup независимо от metadata, атомарно създаване на проект със stages, RPC подреждане и преместване, забрана на cross-project stage, неизменяем owner, изолация на двама потребители, Storage RLS, отказ на self-promotion, admin промяна на чужда роля и отказ на анонимен достъп. Unit тестовете покриват статистики, empty state, дати и файлови ограничения.
 
@@ -34,14 +34,13 @@
 - Security advisors връща `lints: []`.
 - REST заявка за проекти с publishable key без потребителски вход е отказана с HTTP 401 / PostgreSQL `42501`.
 - Auth API е достъпен и отказва несъществуващ акаунт с HTTP 400 / `invalid_credentials`.
-- Email confirmations са включени. Не са изключвани за тестовете.
+- Актуализация: по изрично искане на студента Confirm email е изключено. Auth settings е проверено: `mailer_autoconfirm:true`.
 - Frontend конфигурацията използва актуален активен publishable key; secret/service-role ключ не е използван.
 
 ## Преди предаване
 
 - Site URL и позволеният login Redirect URL в Supabase Auth са записани от студента.
-- Проверки с обикновен, втори обикновен и admin акаунт.
-- Cloud upload/download и отказ на неоторизиран достъп.
+- Финално демонстриране на облачния поток през UI преди защитата.
 - Публичен GitHub URL и подходящо достъпен live сайт.
 - Реални commits в поне 3 различни дни.
 - Реални тестови accounts, автор/email, live URL, repo URL и самооценка в условието.
@@ -53,3 +52,14 @@
 - Append-only migration `20261102104028_english_workspace.sql` задава английски SQL съобщения и колони за новите проекти. Старите права и user content са запазени.
 - Cloud function definitions са проверени след приложението; security advisors: `lints: []`.
 - Браузър: начална страница, обновено старо демо, Kanban, създаване на задача с избор на колона, регистрационна форма и мобилен екран 390 × 844. Console errors: 0.
+
+## Реални акаунти и cloud CRUD
+
+- Студентът създаде Alex и Boyan и изрично избра Alex за admin, Boyan за обикновен user. Ролите са зададени и проверени; паролите не са записвани в source или документация.
+- Преди admin bootstrap двамата успешно влизат и виждат само собствените си проекти. Директен опит за четене/редакция/преместване на чужда задача и self-promotion е отказан.
+- Проверени през реалните Auth/Data/Storage APIs: създаване/редакция/изтриване на проекти и задачи, подредба, смяна на колона, TXT upload/download със съвпадащи bytes, metadata CRUD и отказ на чужд download.
+- Открит е конфликт със старите Storage policies: техни public helpers са без execute права и се оценяват и за друг bucket. Migration `20261102112638_isolate_storage_bucket_policies.sql` поставя процедурна проверка на bucket преди legacy helper. Wrapper-ът е SECURITY INVOKER: не дава нови права, не променя оригиналните helper grants и не разширява legacy достъп.
+- След bootstrap Alex успешно чете роли и профили, изпълнява role RPC за Boyan с role user, чете/редактира/изтрива тестов проект на Boyan и сваля негов тестов файл. Self-demotion на admin и self-promotion на user остават отказани.
+- Временните тестови проекти/задачи/файлове са премахнати; съществуващи потребителски данни не са изтривани. Тестовите API сесии са затворени само със scope local.
+- Нови DB/Storage security advisories няма. Advisor връща предупреждение за изключена Leaked Password Protection в Auth; тази настройка не е променяна от проверката.
+- Повторната browser QA за облачния UI беше недостъпна (`browser.user is unavailable`). Облачните резултати по-горе са проверени през реалните APIs; предишните UI проверки са описани отделно.

@@ -68,10 +68,10 @@ npm run preview -- --port 5181
 
 Създай отделен учебен Supabase проект или избери изрично подходящ проект. Не изпълнявай migration-а в несвързана работна база.
 
-1. Migrations `20261102094635_create_codex_taskboard.sql` и `20261102104028_english_workspace.sql` вече са приложени в студентския проект `vmorymxzdgtatjkfjspc`. Не ги пускай втори път там. За нова среда приложи файловете в `supabase/migrations/` по ред чрез Supabase migration workflow.
+1. Всички migrations в `supabase/migrations/`, включително `20261102112638_isolate_storage_bucket_policies.sql`, вече са приложени в студентския проект `vmorymxzdgtatjkfjspc`. Не ги пускай втори път там. За нова среда приложи файловете по ред чрез Supabase migration workflow.
 2. Копирай `.env.example` в `.env` и попълни project URL и **publishable** ключ.
 3. Рестартирай Vite след промяна на `.env`.
-4. Регистрирай потребител. Ако са включени email confirmations, потвърди акаунта през имейла. Приложението обработва и регистрация без незабавна session.
+4. Регистрирай потребител. По изрично решение на студента Confirm email е изключено за курсовата: регистрацията създава session веднага и адресът не се проверява за притежание. При нова среда настрой това в Auth → Sign In / Providers. Приложението поддържа и включени confirmations.
 5. Създай първия admin чрез доверен SQL достъп, използвайки действителния Auth user UUID:
 
 ```sql
@@ -83,7 +83,7 @@ where user_id = '<USER_UUID>'::uuid;
 
 Не задавай роля чрез signup metadata. Всеки нов потребител получава `user`, независимо какво е изпратил браузърът.
 
-В Supabase Auth → URL Configuration задай Site URL `https://svilen-taskboard-codex.tameshell.chatgpt.site` и добави Redirect URL `https://svilen-taskboard-codex.tameshell.chatgpt.site/login.html`. За локална разработка добави `http://127.0.0.1:5180/login.html`. Приложението изпраща точния login адрес при signup и приема session след потвърждаване на email. Email confirmations остават включени.
+В Supabase Auth → URL Configuration задай Site URL `https://svilen-taskboard-codex.tameshell.chatgpt.site` и добави Redirect URL `https://svilen-taskboard-codex.tameshell.chatgpt.site/login.html`. За локална разработка добави `http://127.0.0.1:5180/login.html`. Приложението изпраща точния login адрес при signup и приема session и при включено email потвърждение.
 
 Публични frontend променливи:
 
@@ -132,7 +132,7 @@ Sites deployment се управлява с `.openai/hosting.json`. По под�
 
 Демонстрационният поток работи и е проверен в браузъра. SQL migration и ключовите правила за достъп са проверени с PostgreSQL чрез PGlite с моделирани `auth` и `storage` schemas. Migration е приложена и в реалния студентски Supabase, а проверката му за сигурност връща празен списък с проблеми. Приложението използва неговия project URL и активен publishable key през игнорирания `.env` файл.
 
-Codex MCP OAuth входът е успешен. Старият Supabase plugin namespace в отворения чат е остарял; директната MCP връзка работи. Остават потвърден реален app акаунт, първоначален admin и пълният cloud upload/download тест. Това не бива да се представя като вече проверен end-to-end Auth поток. Отделен файл `docs/verification.md` съдържа проверените потоци.
+Codex MCP OAuth входът е успешен. Директната MCP връзка работи. Проверени са реален вход с два app акаунта, project/task CRUD, подреждане, cloud upload/download и отказ на достъп до чужди данни. По изричен избор на студента Alex е admin, Boyan е user. Admin достъпът е проверен през Auth, Data и Storage API. Отделен файл `docs/verification.md` съдържа проверените потоци и ограниченията на проверката.
 
 Git историята е нова и е само за тази реализация. Кодът е качен чрез Git CLI в отделния branch [codex-rebuild](https://github.com/SvilenH/Taskboard/tree/codex-rebuild). Той има собствен начален commit и не наследява commits от Copilot прототипа. Старият default branch е запазен. Sites source repository е отделен hosting remote.
 
