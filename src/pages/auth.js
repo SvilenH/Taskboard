@@ -1,7 +1,9 @@
 import { icon, escape, paintIcons } from '../utils/ui.js';
 import { login, register, startDemo, session, isDemo } from '../services/backend.js';
+import { safeReturnPath } from '../utils/navigation.js';
 export async function mount({ page }) {
-  if (!isDemo() && await session()) { location.replace('/dashboard.html'); return; }
+  const returnPath = safeReturnPath(new URLSearchParams(location.search).get('next'));
+  if (!isDemo() && await session()) { location.replace(returnPath); return; }
   const isRegister = page === 'register';
   document.querySelector('#app').innerHTML = `<main class="auth-page"><a class="brand auth-brand" href="/"><span class="brand-symbol">${icon('folder-kanban')}</span>taskboard.</a><section class="auth-story"><p class="eyebrow">A PLACE FOR GOOD IDEAS</p><h1>One task.<br>One step.<br><em>Real progress.</em></h1><p>Organise your day and make more room for what matters.</p><div class="auth-art">${icon('folder-kanban')}<span>Your next project<br>starts here.</span></div></section><section class="auth-form-wrap"><a href="/" class="back-link">${icon('arrow-left')} Home</a><h2>${isRegister ? 'Let’s get started.' : 'Welcome back.'}</h2><p>${isRegister ? 'Make a home for your ideas and projects.' : 'Sign in to your workspace.'}</p><div id="auth-error" class="alert alert-danger" role="alert" hidden></div><div id="auth-success" class="alert alert-success" role="status" hidden></div><form id="auth-form">
     ${isRegister ? '<label class="form-label" for="name">Your name</label><input id="name" name="display_name" class="form-control mb-3" required maxlength="80" autocomplete="name" placeholder="What should we call you?">' : ''}
@@ -15,9 +17,7 @@ export async function mount({ page }) {
         const data = await register(values.email.trim(), values.password, values.display_name.trim());
         if (!data.session) { const notice = document.querySelector('#auth-success'); notice.innerHTML = `Registration submitted. Check your email for a confirmation link, then <a href="/login.html">sign in</a>.`; notice.hidden = false; form.querySelector('#password').value = ''; return; }
       } else await login(values.email.trim(), values.password);
-      const next = new URLSearchParams(location.search).get('next');
-      const allowed = /^\/(?:dashboard|projects|project-edit|board|tasks|files|admin)\.html(?:\?.*)?$/;
-      location.href = next && allowed.test(next) ? next : '/dashboard.html';
+      location.href = returnPath;
     } catch (error) { const box = document.querySelector('#auth-error'); box.textContent = error.message; box.hidden = false; }
     finally { button.disabled = false; }
   }); paintIcons();
