@@ -2,7 +2,7 @@
 
 Онлайн приложение: **https://svilen-taskboard.netlify.app**
 
-Taskboard е приложение за лични проекти и задачи, разработено от Codex от нулата за курсовата работа по Software Technologies with AI. Кодът в тази папка е независим от по-стария прототип `taskboard`, създаден с Copilot. Не са копирани негови source файлове или SQL migrations.
+Taskboard е приложение за лични проекти и задачи, разработено от Codex от нулата за курсовата работа по Software Technologies with AI. Тази реализация има собствена история на разработката и собствени SQL migrations.
 
 ## Какво прави
 
@@ -147,6 +147,6 @@ npx netlify-cli@27.16.1 deploy --site svilen-taskboard --dir dist --no-build --p
 
 Codex MCP OAuth входът е успешен. Директната MCP връзка работи. Проверени са реален вход с два app акаунта, project/task CRUD, подреждане, cloud upload/download и отказ на достъп до чужди данни. По изричен избор на студента Alex е admin, Boyan е user. Admin достъпът е проверен през Auth, Data и Storage API. Отделен файл `docs/verification.md` съдържа проверените потоци и ограниченията на проверката.
 
-Git историята е нова и е само за тази реализация. Кодът е качен чрез Git CLI в отделния branch [codex-rebuild](https://github.com/SvilenH/Taskboard/tree/codex-rebuild). Той има собствен начален commit и не наследява commits от Copilot прототипа. Старият default branch е запазен. Sites source repository е отделен hosting remote.
+Основният код и цялата история на тази реализация са в публичния [GitHub repository](https://github.com/SvilenH/Taskboard), branch `main`. Историята започва с независимия начален commit `ebcad04`; старият прототип е премахнат от основния клон. Файлът `.github/copilot-instructions.md` съдържа инструкции за настоящата реализация и се пази, защото условието на курса изисква точно това име.
 
 Изискваните 15 commits в 3 реални дни трябва да се натрупат през действителните следващи стъпки; не се променят дати на commits. Крайният срок е неделя, 8 ноември 2026 г., според „края на седмицата“, казано на 2 ноември.

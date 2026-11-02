@@ -1,5 +1,7 @@
 # Проверки
 
+Проверяваната реализация е в публичния repository https://github.com/SvilenH/Taskboard, branch `main`. Той съдържа независимата история на новия проект; старият прототип е заменен по изрично искане на студента.
+
 ## Автоматизирани проверки
 
 `npm test`: 13 успешни теста. Интеграционният тест изпълнява всички migrations по ред в PGlite PostgreSQL с тестови Auth/Storage schemas и роли, както на чиста база, така и със старите Storage policies и отнети function grants. Navigation тестовете проверяват връщане към .html и clean URL адреси и отказ на външен redirect.
