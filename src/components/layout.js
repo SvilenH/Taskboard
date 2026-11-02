@@ -18,7 +18,9 @@ export function layout(ctx, page) {
     </div></div>`;
   document.querySelector('#logout').addEventListener('click', async event => { const button = event.currentTarget; button.disabled = true; try { await logout(); } catch (error) { notify(error.message, 'error'); button.disabled = false; } });
   document.querySelector('#cloud-link')?.addEventListener('click', () => sessionStorage.removeItem('taskboard-demo'));
-  const toggleMenu = open => { document.querySelector('#sidebar').classList.toggle('open', open); document.querySelector('#sidebar-scrim').classList.toggle('open', open); document.querySelector('#mobile-menu').setAttribute('aria-expanded', String(open)); };
+  const mobile = matchMedia('(max-width:760px)');
+  const toggleMenu = open => { const sidebar = document.querySelector('#sidebar'); sidebar.classList.toggle('open', open); sidebar.inert = mobile.matches && !open; document.querySelector('#sidebar-scrim').classList.toggle('open', open); document.querySelector('#mobile-menu').setAttribute('aria-expanded', String(open)); };
+  mobile.addEventListener('change', () => toggleMenu(false)); toggleMenu(false);
   document.querySelector('#mobile-menu').addEventListener('click', () => toggleMenu(!document.querySelector('#sidebar').classList.contains('open')));
   document.querySelector('#sidebar-scrim').addEventListener('click', () => toggleMenu(false));
   document.addEventListener('keydown', event => { if (event.key === 'Escape') toggleMenu(false); });

@@ -12,7 +12,7 @@ function client() { if (!supabase) throw new Error('Облачната връз�
 async function result(request) { const { data, error } = await request; if (error) throw new Error(error.message); return data; }
 async function all(table) {
   const data = []; let offset = 0;
-  while (true) { const page = await result(client().from(table).select('*').order('id').range(offset, offset + 499)); data.push(...page); if (page.length < 500) break; offset += 500; }
+  while (true) { const page = await result(client().from(table).select('*').order(table === 'tb_user_roles' ? 'user_id' : 'id').range(offset, offset + 499)); data.push(...page); if (page.length < 500) break; offset += 500; }
   return data;
 }
 export async function session() {
