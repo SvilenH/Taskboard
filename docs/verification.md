@@ -23,11 +23,23 @@
 
 ## Не е доказано от тези проверки
 
-Реална Supabase регистрация, потвърждаване на email, сървърна session, Storage HTTP upload/download, приложени remote migrations и реален hosted RLS поток. За тях е необходим достъп до студентския Supabase проект. Admin bootstrap трябва да се направи за изрично избран реален user UUID.
+Реална Supabase регистрация, потвърждаване на email, session с потвърден акаунт и Storage HTTP upload/download. Admin bootstrap трябва да се направи за изрично избран реален user UUID.
+
+## Облачни проверки на 2 ноември 2026
+
+- Codex Supabase MCP OAuth входът е успешен; проектът е `vmorymxzdgtatjkfjspc`.
+- Приложена migration `20261102094635_create_codex_taskboard.sql`; локалното име е синхронизирано с remote migration history.
+- Проверени са 6 tb_ таблици, всички с включен RLS.
+- Storage bucket `tb-attachments` е частен и ограничава размера до 5 MB.
+- Security advisors връща `lints: []`.
+- REST заявка за проекти с publishable key без потребителски вход е отказана с HTTP 401 / PostgreSQL `42501`.
+- Auth API е достъпен и отказва несъществуващ акаунт с HTTP 400 / `invalid_credentials`.
+- Email confirmations са включени. Не са изключвани за тестовете.
+- Frontend конфигурацията използва актуален активен publishable key; secret/service-role ключ не е използван.
 
 ## Преди предаване
 
-- Свързване на учебния Supabase проект и прилагане на migration-а.
+- Задаване на Site URL и позволените login Redirect URLs в Supabase Auth.
 - Проверки с обикновен, втори обикновен и admin акаунт.
 - Cloud upload/download и отказ на неоторизиран достъп.
 - Публичен GitHub URL и подходящо достъпен live сайт.

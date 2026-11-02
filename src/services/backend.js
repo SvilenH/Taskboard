@@ -22,7 +22,7 @@ export async function session() {
 }
 export async function login(email, password) { sessionStorage.removeItem('taskboard-demo'); const { data, error } = await client().auth.signInWithPassword({ email, password }); if (error) throw error; return data; }
 export async function register(email, password, display_name) {
-  sessionStorage.removeItem('taskboard-demo'); const { data, error } = await client().auth.signUp({ email, password, options: { data: { display_name } } }); if (error) throw error; return data;
+  sessionStorage.removeItem('taskboard-demo'); const { data, error } = await client().auth.signUp({ email, password, options: { data: { display_name }, emailRedirectTo: new URL('/login.html', location.origin).href } }); if (error) throw error; return data;
 }
 export async function logout() { if (isDemo()) return leaveDemo(); const { error } = await client().auth.signOut(); if (error) throw error; location.href = '/'; }
 export async function load() {

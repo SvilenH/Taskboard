@@ -1,6 +1,7 @@
 import { icon, escape, paintIcons } from '../utils/ui.js';
-import { login, register, startDemo } from '../services/backend.js';
+import { login, register, startDemo, session, isDemo } from '../services/backend.js';
 export async function mount({ page }) {
+  if (!isDemo() && await session()) { location.replace('/dashboard.html'); return; }
   const isRegister = page === 'register';
   document.querySelector('#app').innerHTML = `<main class="auth-page"><a class="brand auth-brand" href="/"><span class="brand-symbol">${icon('folder-kanban')}</span>taskboard.</a><section class="auth-story"><p class="eyebrow">МЯСТО ЗА ДОБРИ ИДЕИ</p><h1>Една задача.<br>Една стъпка.<br><em>Много напредък.</em></h1><p>Подреди деня си и остави повече място за онова, което има значение.</p><div class="auth-art">${icon('folder-kanban')}<span>Твоят следващ проект<br>започва тук.</span></div></section><section class="auth-form-wrap"><a href="/" class="back-link">${icon('arrow-left')} Начална страница</a><h2>${isRegister ? 'Нека започнем.' : 'Здравей отново.'}</h2><p>${isRegister ? 'Създай си място за идеи и проекти.' : 'Влез в своето работно пространство.'}</p><div id="auth-error" class="alert alert-danger" role="alert" hidden></div><div id="auth-success" class="alert alert-success" role="status" hidden></div><form id="auth-form">
     ${isRegister ? '<label class="form-label" for="name">Твоето име</label><input id="name" name="display_name" class="form-control mb-3" required maxlength="80" autocomplete="name" placeholder="Как да те наричаме?">' : ''}

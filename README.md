@@ -66,7 +66,7 @@ npm run preview -- --port 5181
 
 Създай отделен учебен Supabase проект или избери изрично подходящ проект. Не изпълнявай migration-а в несвързана работна база.
 
-1. Приложи `supabase/migrations/20261102080522_create_codex_taskboard.sql` чрез Supabase migration workflow.
+1. Migration `supabase/migrations/20261102094635_create_codex_taskboard.sql` вече е приложена в студентския проект `vmorymxzdgtatjkfjspc`. Не я пускай втори път там. За нова среда я приложи чрез Supabase migration workflow.
 2. Копирай `.env.example` в `.env` и попълни project URL и **publishable** ключ.
 3. Рестартирай Vite след промяна на `.env`.
 4. Регистрирай потребител. Ако са включени email confirmations, потвърди акаунта през имейла. Приложението обработва и регистрация без незабавна session.
@@ -80,6 +80,8 @@ where user_id = '<USER_UUID>'::uuid;
 ```
 
 Не задавай роля чрез signup metadata. Всеки нов потребител получава `user`, независимо какво е изпратил браузърът.
+
+В Supabase Auth → URL Configuration задай Site URL `https://svilen-taskboard-codex.tameshell.chatgpt.site` и добави Redirect URL `https://svilen-taskboard-codex.tameshell.chatgpt.site/login.html`. За локална разработка добави `http://127.0.0.1:5180/login.html`. Приложението изпраща точния login адрес при signup и приема session след потвърждаване на email. Email confirmations остават включени.
 
 Публични frontend променливи:
 
@@ -126,9 +128,9 @@ Sites deployment се управлява с `.openai/hosting.json`. По под�
 
 ## Състояние и оставаща работа
 
-Демонстрационният поток работи и е проверен в браузъра. SQL migration и ключовите правила за достъп са проверени с PostgreSQL чрез PGlite с моделирани `auth` и `storage` schemas. Това **не е проверка на реалната Supabase Auth/Storage услуга**.
+Демонстрационният поток работи и е проверен в браузъра. SQL migration и ключовите правила за достъп са проверени с PostgreSQL чрез PGlite с моделирани `auth` и `storage` schemas. Migration е приложена и в реалния студентски Supabase, а проверката му за сигурност връща празен списък с проблеми. Приложението използва неговия project URL и активен publishable key през игнорирания `.env` файл.
 
-При първоначалното изграждане connector-ите за студентските Supabase и GitHub акаунти връщат „Unknown tool“. Supabase CLI също няма активна login session. Затова cloud migration, реални accounts и облачен upload/download още не са приложени/проверени. Новата папка не използва `.env` от Copilot прототипа. Отделен файл `docs/verification.md` съдържа проверените потоци.
+Codex MCP OAuth входът е успешен. Старият Supabase plugin namespace в отворения чат е остарял; директната MCP връзка работи. Остават потвърден реален app акаунт, първоначален admin и пълният cloud upload/download тест. Това не бива да се представя като вече проверен end-to-end Auth поток. Отделен файл `docs/verification.md` съдържа проверените потоци.
 
 Git историята е нова и е само за тази реализация. Кодът е качен чрез Git CLI в отделния branch [codex-rebuild](https://github.com/SvilenH/Taskboard/tree/codex-rebuild). Той има собствен начален commit и не наследява commits от Copilot прототипа. Старият default branch е запазен. Sites source repository е отделен hosting remote.
 

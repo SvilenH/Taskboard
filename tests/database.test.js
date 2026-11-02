@@ -14,7 +14,7 @@ test('migration, RPC ordering, constraints and RLS work in PostgreSQL', async t 
       create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text,name text);
       alter table storage.objects enable row level security; grant select,insert,delete on storage.objects to authenticated;
       alter default privileges in schema public grant all on tables to authenticated,anon;`);
-    await db.exec(await readFile(new URL('../supabase/migrations/20261102080522_create_codex_taskboard.sql', import.meta.url),'utf8'));
+    await db.exec(await readFile(new URL('../supabase/migrations/20261102094635_create_codex_taskboard.sql', import.meta.url),'utf8'));
     await db.query(`insert into auth.users values($1,'owner@example.invalid','{"display_name":"Owner","role":"admin"}'),($2,'outsider@example.invalid','{}')`,[owner,outsider]);
     assert.equal((await db.query(`select role from public.tb_user_roles where user_id=$1`,[owner])).rows[0].role,'user','signup metadata must not grant admin');
     const asUser = async id => { await db.exec('reset role'); await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]); await db.exec('set role authenticated'); };
