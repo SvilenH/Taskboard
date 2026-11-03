@@ -126,6 +126,8 @@ erDiagram
 
 ## Публикуване
 
+GitHub Actions изпълнява `npm ci`, `npm test` и `npm run build` с Node 24 при всеки push в `main` и pull request към него. Резултатите са в [Test and build](https://github.com/SvilenH/Taskboard/actions/workflows/ci.yml). Проверката използва локална PGlite база и не изисква облачни credentials; production build в CI проверява компилацията без връзка с реалния Supabase. Workflow-ът има само read права и не публикува сайта. Стъпките следват [официалното ръководство на GitHub](https://docs.github.com/en/actions/tutorials/build-and-test-code/nodejs).
+
 Продукционната версия е публикувана в Netlify: https://svilen-taskboard.netlify.app. Проектът е `svilen-taskboard`, ID `dc3f5a3d-cf18-41cb-9be3-52af50398c04`. Student акаунтът е свързан чрез официалния Netlify CLI.
 
 `netlify.toml` задава build `npm run build`, publish directory `dist`, Node 24 и отделни правила за деветте адреса без `.html`. Всеки адрес зарежда собствен HTML entry. Непознатите адреси връщат 404. Няма SPA catch-all.
