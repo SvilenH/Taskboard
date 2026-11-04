@@ -1,12 +1,13 @@
 import { escape, icon, initials, paintIcons, notify } from '../utils/ui.js';
 import { isDemo, logout } from '../services/backend.js';
+import { setupMobileMenu } from '../utils/mobile-menu.js';
 
 const navigation = [['dashboard', 'layout-dashboard', 'Overview'], ['projects', 'folder-kanban', 'Projects'], ['tasks', 'list-todo', 'All tasks'], ['files', 'paperclip', 'Files']];
 export function layout(ctx, page) {
   const name = ctx.profile?.display_name || ctx.user.user_metadata?.display_name || ctx.user.email?.split('@')[0] || 'User';
   const active = ['board', 'project-edit'].includes(page) ? 'projects' : page;
   document.querySelector('#app').innerHTML = `<a href="#main" class="skip-link">Skip to content</a><div class="app-shell">
-    <aside class="sidebar" id="sidebar"><a class="brand" href="/dashboard.html"><span class="brand-symbol">${icon('folder-kanban')}</span>taskboard<span class="brand-point">.</span></a>
+    <aside class="sidebar" id="sidebar"><div class="sidebar-heading"><a class="brand" href="/dashboard.html"><span class="brand-symbol">${icon('folder-kanban')}</span>taskboard<span class="brand-point">.</span></a><button class="icon-button sidebar-close" id="close-menu" aria-label="Close menu">${icon('x')}</button></div>
       <div class="workspace-label"><span class="workspace-icon">T</span><span>My workspace<small>Make room for ideas</small></span></div>
       <p class="nav-caption">WORKSPACE</p><nav aria-label="Main navigation">${[...navigation, ...(ctx.admin ? [['admin', 'shield-check', 'Administration']] : [])].map(([key, glyph, label]) => `<a class="side-link ${active === key ? 'active' : ''}" href="/${key}.html" ${active === key ? 'aria-current="page"' : ''}>${icon(glyph)}${label}${key === 'projects' ? `<span class="nav-count">${ctx.data.projects.length}</span>` : ''}</a>`).join('')}</nav>
       <div class="sidebar-note"><span class="note-dot"></span><strong>Small steps matter.</strong><p>Make room for your next big idea.</p><a href="/project-edit.html">Create project ${icon('arrow-right')}</a></div>
@@ -18,12 +19,7 @@ export function layout(ctx, page) {
     </div></div>`;
   document.querySelector('#logout').addEventListener('click', async event => { const button = event.currentTarget; button.disabled = true; try { await logout(); } catch (error) { notify(error.message, 'error'); button.disabled = false; } });
   document.querySelector('#cloud-link')?.addEventListener('click', () => sessionStorage.removeItem('taskboard-demo'));
-  const mobile = matchMedia('(max-width:760px)');
-  const toggleMenu = open => { const sidebar = document.querySelector('#sidebar'); sidebar.classList.toggle('open', open); sidebar.inert = mobile.matches && !open; document.querySelector('#sidebar-scrim').classList.toggle('open', open); document.querySelector('#mobile-menu').setAttribute('aria-expanded', String(open)); };
-  mobile.addEventListener('change', () => toggleMenu(false)); toggleMenu(false);
-  document.querySelector('#mobile-menu').addEventListener('click', () => toggleMenu(!document.querySelector('#sidebar').classList.contains('open')));
-  document.querySelector('#sidebar-scrim').addEventListener('click', () => toggleMenu(false));
-  document.addEventListener('keydown', event => { if (event.key === 'Escape') toggleMenu(false); });
+  setupMobileMenu();
   paintIcons();
 }
 export function heading(title, description, action = '', eyebrow = 'YOUR WORKSPACE') {
