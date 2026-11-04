@@ -1,5 +1,11 @@
 # Проверки
 
+## Собственост и състояние на проектите
+
+Личният Overview вече филтрира по текущия owner, включително за admin. Administration и Projects групират по отделни user IDs и показват името на собственика, броя задачи и файлове. Owner филтърът работи и при Tasks/Files; картите показват Not started / In progress / Completed. Board и task editor показват правилния owner, а avatar се взема от действителния task creator.
+
+Проверени локално с реалните акаунти: 3 лични проекта на Alex, 2 отделни admin групи, филтър Boyan → 3 проекта / 18 задачи / 3 файла, комбиниране с Completed и празен резултат, следване на owner линка от Administration към Projects и изглед при 390 px. Четири нови автоматични проверки покриват статусите, комбинираните филтри, еднакви display names и HTML escaping. Текущият набор има 17 успешни теста.
+
 Финалният преглед на 4 ноември 2026 г. е обобщен в [submission-checklist.md](submission-checklist.md). Повторен реален Auth/Data/Storage тест с Alex и Boyan потвърждава CRUD, преместване на задачи, upload/download, изолацията на обикновения потребител и admin достъпа. Временните записи и файлове са почистени. Шестте `tb_` таблици имат RLS и policies, а трите собствени migration версии съвпадат с cloud history.
 
 `npm run check:live` проверява публичните clean и `.html` URL адреси, document language, правилния HTML entry, 404 и JS/CSS resources. Няма Auth credentials и не променя данни. Отрицателна локална проверка с нарочно грешен server потвърждава, че командата отказва грешен HTML entry, фалшив 404 и HTML, върнат вместо JS/CSS. Броят проверки за текущия build е 24.

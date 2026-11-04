@@ -1,12 +1,13 @@
 import { escape, icon, paintIcons, notify, shortDate, size, confirmDialog } from '../utils/ui.js';
 import { priorities } from '../utils/model.js';
+import { ownerName } from '../utils/workspace.js';
 import { saveTask, deleteTask, upload, download, deleteAttachment } from '../services/backend.js';
 
 export function taskEditor(ctx, { task, project, stage }, onSaved) {
   const stages = ctx.data.stages.filter(s => s.project_id === project.id).sort((a, b) => a.position - b.position);
   const attachments = ctx.data.attachments.filter(a => a.task_id === task?.id);
   const dialog = document.createElement('dialog'); dialog.className = 'task-dialog'; dialog.setAttribute('aria-labelledby', 'task-dialog-title');
-  dialog.innerHTML = `<div class="dialog-heading"><div><p class="eyebrow">${escape(project.title)}</p><h2>${task ? 'Task details' : 'New task'}</h2></div><button class="icon-button" data-close aria-label="Close">${icon('x')}</button></div>
+  dialog.innerHTML = `<div class="dialog-heading"><div><p class="eyebrow">${escape(project.title)} · Owner: ${escape(ownerName(ctx.data, project.owner_id))}</p><h2>${task ? 'Task details' : 'New task'}</h2></div><button class="icon-button" data-close aria-label="Close">${icon('x')}</button></div>
     <form id="task-form"><div class="dialog-body"><div class="alert alert-danger" id="task-error" role="alert" hidden></div><label class="form-label" for="task-title">Title <span>*</span></label><input class="form-control mb-3" id="task-title" name="title" value="${escape(task?.title || '')}" required maxlength="160" placeholder="What needs to be done?">
     <label class="form-label" for="task-description">Description</label><textarea class="form-control mb-3" id="task-description" name="description" rows="4" maxlength="5000" placeholder="Add some context…">${escape(task?.description || '')}</textarea>
     <div class="row g-3"><div class="col-sm-6"><label class="form-label" for="task-stage">Column</label><select class="form-select" name="stage_id" id="task-stage">${stages.map(s => `<option value="${escape(s.id)}" ${s.id === (task?.stage_id || stage?.id) ? 'selected' : ''}>${escape(s.name)}</option>`).join('')}</select></div><div class="col-sm-6"><label class="form-label" for="task-priority">Priority</label><select class="form-select" name="priority" id="task-priority">${Object.entries(priorities).map(([key, label]) => `<option value="${key}" ${key === (task?.priority || 'medium') ? 'selected' : ''}>${label}</option>`).join('')}</select></div><div class="col-12"><label class="form-label" for="task-due">Due date</label><input class="form-control" type="date" id="task-due" name="due_date" value="${escape(task?.due_date || '')}"></div></div>
