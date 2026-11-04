@@ -28,7 +28,7 @@ export function setupMobileMenu() {
       sidebar.removeAttribute('aria-modal');
       sidebar.removeAttribute('aria-label');
       if (mobile.matches && (wasOpen || focusedInside)) toggle.focus();
-      else if (wasOpen && focusedInside) sidebar.querySelector('[aria-current="page"]').focus();
+      else if (wasOpen) sidebar.querySelector('[aria-current="page"]').focus();
     }
   }
 

@@ -1,5 +1,9 @@
 # Проверки
 
+Финалният преглед на 4 ноември 2026 г. е обобщен в [submission-checklist.md](submission-checklist.md). Повторен реален Auth/Data/Storage тест с Alex и Boyan потвърждава CRUD, преместване на задачи, upload/download, изолацията на обикновения потребител и admin достъпа. Временните записи и файлове са почистени. Шестте `tb_` таблици имат RLS и policies, а трите собствени migration версии съвпадат с cloud history.
+
+`npm run check:live` проверява публичните clean и `.html` URL адреси, document language, правилния HTML entry, 404 и JS/CSS resources. Няма Auth credentials и не променя данни. Отрицателна локална проверка с нарочно грешен server потвърждава, че командата отказва грешен HTML entry, фалшив 404 и HTML, върнат вместо JS/CSS. Броят проверки за текущия build е 24.
+
 ## Мобилна навигация с клавиатура (4 ноември 2026 г.)
 
 Мобилното меню вече има видим Close menu бутон, именуван dialog и modal семантика. При отваряне фокусът е върху Close menu; фонът е inert. Tab и Shift+Tab остават в менюто, а Escape, Close menu и затъмненият фон го затварят и връщат фокуса към Open menu. При desktop размер менюто става нормална sidebar навигация и страницата отново е интерактивна. Поведението следва [WAI APG за modal dialogs](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/).
