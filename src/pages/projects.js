@@ -13,7 +13,7 @@ export async function mount(ctx) {
     <div class="filter-field"><label for="project-status">Project status</label><select id="project-status" class="form-select"><option value="">All statuses</option><option value="planned">Not started</option><option value="active">In progress</option><option value="completed">Completed</option></select></div><span class="results-count" id="result-count" aria-live="polite"></span></div><div id="projects-list"></div>`;
   function render() {
     const filtered = filterProjects(ctx.data.projects, ctx.data, {owner, query:document.querySelector('#project-search').value, status:document.querySelector('#project-status').value});
-    document.querySelector('#result-count').textContent = `${filtered.length} projects`;
+    document.querySelector('#result-count').textContent = `${filtered.length} project${filtered.length === 1 ? '' : 's'}`;
     document.querySelector('#projects-list').innerHTML = !filtered.length ? empty('No projects found', 'Try a different owner, status or search.') : ctx.admin ? groupProjects(filtered, ctx.data).map(group => `<section class="owner-group">${ownerHeading(group,ctx.data,ctx.user.id)}<div class="projects-grid">${group.projects.map(p => projectCard(p,ctx.data,ctx.user.id)).join('')}</div></section>`).join('') : `<div class="projects-grid">${filtered.map(p => projectCard(p,ctx.data,ctx.user.id)).join('')}</div>`;
     paintIcons();
   }

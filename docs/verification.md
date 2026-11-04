@@ -6,6 +6,10 @@
 
 Проверени локално с реалните акаунти: 3 лични проекта на Alex, 2 отделни admin групи, филтър Boyan → 3 проекта / 18 задачи / 3 файла, комбиниране с Completed и празен резултат, следване на owner линка от Administration към Projects и изглед при 390 px. Четири нови автоматични проверки покриват статусите, комбинираните филтри, еднакви display names и HTML escaping. Текущият набор има 17 успешни теста.
 
+На production са повторени owner групите Alex/Boyan, личните 3 project cards на Alex и филтрирането на Boyan до 3 проекта. Boyan продължава да получава отказ при директен /admin. Реалният дву-account API тест отново проверява CRUD, file bytes и отрицателните права; временните му записи са почистени.
+
+Upload е проверен през двата UI потока: PNG от Files и TXT от task editor. PNG остава след refresh; и двата download файла съвпадат byte-for-byte с оригиналите. 6 MB TXT е отказан с „Maximum file size is 5 MB.“ без нов attachment. След следващия валиден upload грешката се изчиства. Двата QA attachment-а са премахнати през UI; шестте постоянни примерни файла са запазени. Console errors на production QA tab: 0.
+
 Финалният преглед на 4 ноември 2026 г. е обобщен в [submission-checklist.md](submission-checklist.md). Повторен реален Auth/Data/Storage тест с Alex и Boyan потвърждава CRUD, преместване на задачи, upload/download, изолацията на обикновения потребител и admin достъпа. Временните записи и файлове са почистени. Шестте `tb_` таблици имат RLS и policies, а трите собствени migration версии съвпадат с cloud history.
 
 `npm run check:live` проверява публичните clean и `.html` URL адреси, document language, правилния HTML entry, 404 и JS/CSS resources. Няма Auth credentials и не променя данни. Отрицателна локална проверка с нарочно грешен server потвърждава, че командата отказва грешен HTML entry, фалшив 404 и HTML, върнат вместо JS/CSS. Броят проверки за текущия build е 24.

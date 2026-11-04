@@ -8,7 +8,7 @@ export async function mount(ctx) {
   let owner = '';
   function renderProjects() {
     const projects = ctx.data.projects.filter(p => !owner || p.owner_id === owner);
-    document.querySelector('#admin-project-count').textContent = `${projects.length} projects`;
+    document.querySelector('#admin-project-count').textContent = `${projects.length} project${projects.length === 1 ? '' : 's'}`;
     document.querySelector('#admin-projects').innerHTML = projects.length ? groupProjects(projects,ctx.data).map(group => `<section class="owner-group">${ownerHeading(group,ctx.data,ctx.user.id)}<div class="surface table-responsive"><table class="table task-table"><thead><tr><th>Project</th><th>Status</th><th>Tasks</th><th>Files</th><th>Actions</th></tr></thead><tbody>${group.projects.map(project => {
       const state = projectState(project,ctx.data);
       return `<tr><td><a class="muted-link" href="/board.html?project=${encodeURIComponent(project.id)}">${escape(project.title)}</a></td><td><span class="project-state state-${state.key}">${state.label}</span></td><td>${state.completed} / ${state.total} done</td><td>${ctx.data.attachments.filter(a=>a.project_id===project.id).length}</td><td><div class="d-flex gap-2"><a class="btn btn-light btn-sm" href="/board.html?project=${encodeURIComponent(project.id)}">Open</a><a class="icon-button" href="/project-edit.html?id=${encodeURIComponent(project.id)}" aria-label="Edit ${escape(project.title)}">${icon('pencil')}</a><button class="icon-button danger" data-delete="${escape(project.id)}" aria-label="Delete ${escape(project.title)}">${icon('trash-2')}</button></div></td></tr>`;
