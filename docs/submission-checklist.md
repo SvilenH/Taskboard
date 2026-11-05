@@ -21,10 +21,10 @@
 | Потребители и admin панел | `tb_user_roles`, `/admin`, различни права; забранени self-promotion и admin self-demotion |
 | Сървърна защита | RLS е включено на шестте приложни таблици; Storage policies ограничават частните файлове; реален cross-user API тест |
 | Минимум 4 свързани таблици | `tb_profiles`, `tb_user_roles`, `tb_projects`, `tb_stages`, `tb_tasks`, `tb_attachments`; foreign keys, constraints и индекси |
-| Migrations в Supabase и GitHub | Трите SQL файла в `supabase/migrations` съвпадат с приложените версии; локален интеграционен SQL тест |
+| Migrations в Supabase и GitHub | Четирите SQL файла в `supabase/migrations` съвпадат с приложените версии; локален интеграционен SQL тест |
 | Файлове | Частен `tb-attachments` bucket; upload и download през UI и реалния API, проверка на съдържанието и отказ на чужд download |
 | Публикувано приложение | Public Netlify; clean и `.html` адреси зареждат правилния HTML entry; неизвестен адрес връща 404 |
-| Минимум 15 commits в минимум 3 дни | Собствена история в `main` на 2, 3 и 4 ноември; без промени на timestamps |
+| Минимум 15 commits в минимум 3 дни | Собствена история в `main` на 2, 3, 4 и 5 ноември; без промени на timestamps |
 | Описание, архитектура, DB diagram и local setup | `README.md`; diagram е Mermaid ER; setup с `npm ci`, `npm run dev` и игнориран `.env` |
 | Подготовка и проверка | `docs/defense.md`, `docs/verification.md`, `npm test`, `npm run build`, `npm run check:live` |
 
@@ -34,7 +34,7 @@
 
 Реалните Alex и Boyan акаунти са проверени през Supabase: login, правилни роли, project/task create/edit/move, английски начални колони, TXT upload/download със съвпадащо съдържание. Boyan няма достъп до чужд проект, промяна на чужда задача или чужд файл; анонимен DB/download достъп е отказан. Admin може да управлява проекта и файла на Boyan. Тестовите записи и файлове са почистени, API сесиите са затворени локално.
 
-Read-only SQL проверка потвърждава RLS и policies на шестте `tb_` таблици. Migrations API потвърждава трите версии на настоящия проект. В cloud history има и две по-стари migration entries от предишния прототип; те не са част от собствената Git история и не са преизползвани за тази реализация.
+Read-only SQL проверка потвърждава RLS и policies на шестте `tb_` таблици. Migrations API потвърждава четирите версии на настоящия проект. В cloud history има и две по-стари migration entries от предишния прототип; те не са част от собствената Git история и не са преизползвани за тази реализация.
 
 Supabase security advisor няма DB/Storage findings. Единственото Auth предупреждение е изключена [Leaked Password Protection](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection). Email confirmation е изключено по избора за учебния проект. Това не отменя server-side RLS проверките.
 

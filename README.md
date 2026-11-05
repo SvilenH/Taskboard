@@ -70,7 +70,7 @@ npm run preview -- --port 5181
 
 Създай отделен учебен Supabase проект или избери изрично подходящ проект. Не изпълнявай migration-а в несвързана работна база.
 
-1. Всички migrations в `supabase/migrations/`, включително `20261102112638_isolate_storage_bucket_policies.sql`, вече са приложени в студентския проект `vmorymxzdgtatjkfjspc`. Не ги пускай втори път там. За нова среда приложи файловете по ред чрез Supabase migration workflow.
+1. Всички четири migrations в `supabase/migrations/`, включително `20261105074044_index_taskboard_attachment_projects.sql`, вече са приложени в студентския проект `vmorymxzdgtatjkfjspc`. Не ги пускай втори път там. За нова среда приложи файловете по ред чрез Supabase migration workflow.
 2. Копирай `.env.example` в `.env` и попълни project URL и **publishable** ключ.
 3. Рестартирай Vite след промяна на `.env`.
 4. Регистрирай потребител. По изрично решение на студента Confirm email е изключено за курсовата: регистрацията създава session веднага и адресът не се проверява за притежание. При нова среда настрой това в Auth → Sign In / Providers. Приложението поддържа и включени confirmations.
@@ -145,7 +145,7 @@ npx netlify-cli@27.16.1 deploy --site svilen-taskboard --dir dist --no-build --p
 
 ## Проверено преди предаване
 
-Демонстрационният и реалният облачен поток са проверени през браузъра. 17 автоматични теста покриват логиката, migrations, достъпа и безопасното връщане след login. Migration history е синхронизирана с реалния студентски Supabase. Няма нови DB/Storage advisories; Auth има предупреждение за изключена Leaked Password Protection. Приложението използва project URL и publishable key през игнорирания `.env` файл.
+Демонстрационният и реалният облачен поток са проверени през браузъра. 17 автоматични теста покриват логиката, migrations, достъпа и безопасното връщане след login. Четирите собствени migrations са синхронизирани с реалния студентски Supabase. Composite индексът върху `tb_attachments(project_id, task_id)` покрива project foreign key и връзката project/task при филтриране и cascade deletion. Security advisor няма DB/Storage findings; Auth има предупреждение за изключена Leaked Password Protection. Performance advisor има отделни препоръки за старите prototype таблици и може да отчита новия индекс като unused при малък обем данни. Приложението използва project URL и publishable key през игнорирания `.env` файл.
 
 Codex MCP OAuth входът е успешен. Директната MCP връзка работи. Проверени са реален вход с два app акаунта, project/task CRUD, подреждане, cloud upload/download и отказ на достъп до чужди данни. По изричен избор на студента Alex е admin, Boyan е user. Admin достъпът е проверен през Auth, Data и Storage API. Отделен файл `docs/verification.md` съдържа проверените потоци и ограниченията на проверката.
 

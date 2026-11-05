@@ -1,5 +1,15 @@
 # Проверки
 
+## Последна проверка на 5 ноември
+
+17 автоматични tests, production build и 24 live HTTP checks минават отново. Всичките 17 JS/CSS/SVG ресурса на Netlify съвпадат с локалния production build. Реалният дву-account API тест потвърждава login, роли, CRUD, преместване към Done, matching TXT upload/download и отказ на непозволени DB/Storage операции. Нов signup получава непосредствена session, правилен profile и role user дори при metadata role admin; refresh и повторен login работят. Временният signup и всички нови QA записи са почистени.
+
+Production browser проверката е повторена с Boyan и Alex. Boyan вижда 3 лични проекта и получава отказ при директен /admin. TXT upload от Files остава след reload и download bytes съвпадат с оригинала. Alex вижда отделните owner групи; филтър Boyan връща точно 3 проекта. При 390 × 844 няма външен horizontal overflow; Open menu, Escape, връщане на фокуса и действителен mobile logout работят. Console errors на новия QA tab: 0. Viewport е върнат към нормалния размер. Единственият нов browser QA attachment е премахнат чрез собствената user session с exact ID/name/project/content guards; шестте постоянни примерни файла са запазени.
+
+Performance advisor откри непокрита foreign key връзка за attachments. Append-only migration `20261105074044_index_taskboard_attachment_projects.sql` добавя composite индекс `(project_id, task_id)` и покрива двата foreign keys. Локалният интеграционен тест изпълнява и четирите migrations; cloud migration версията съвпада с локалното име. След промяната няма unindexed foreign key finding за шестте собствени `tb_` таблици. Старите prototype таблици имат отделни performance препоръки. Нов индекс може първоначално да се отчита като unused при малък dataset; това не е дефект в достъпа или функционалността.
+
+Security advisor продължава да отчита само Auth Leaked Password Protection Disabled. Формулярът съдържа отделни колони Score и My Score; My Score остава празно по избора на студента. Това е мястото за лична самооценка, а не предварително присъдена оценка от преподавател.
+
 ## Собственост и състояние на проектите
 
 Личният Overview вече филтрира по текущия owner, включително за admin. Administration и Projects групират по отделни user IDs и показват името на собственика, броя задачи и файлове. Owner филтърът работи и при Tasks/Files; картите показват Not started / In progress / Completed. Board и task editor показват правилния owner, а avatar се взема от действителния task creator.
@@ -10,7 +20,7 @@
 
 Upload е проверен през двата UI потока: PNG от Files и TXT от task editor. PNG остава след refresh; и двата download файла съвпадат byte-for-byte с оригиналите. 6 MB TXT е отказан с „Maximum file size is 5 MB.“ без нов attachment. След следващия валиден upload грешката се изчиства. Двата QA attachment-а са премахнати през UI; шестте постоянни примерни файла са запазени. По време на upload проверките не са записани console грешки. При по-късна навигация е записана една MutationObserver грешка без source URL или stack; при последващ reload не се повтаря и функционалните проверки остават успешни. Не се твърди, че целият натрупан browser log е празен.
 
-Финалният преглед на 4 ноември 2026 г. е обобщен в [submission-checklist.md](submission-checklist.md). Повторен реален Auth/Data/Storage тест с Alex и Boyan потвърждава CRUD, преместване на задачи, upload/download, изолацията на обикновения потребител и admin достъпа. Временните записи и файлове са почистени. Шестте `tb_` таблици имат RLS и policies, а трите собствени migration версии съвпадат с cloud history.
+Финалният преглед е обобщен в [submission-checklist.md](submission-checklist.md). Повторен реален Auth/Data/Storage тест с Alex и Boyan потвърждава CRUD, преместване на задачи, upload/download, изолацията на обикновения потребител и admin достъпа. Временните записи и файлове са почистени. Шестте `tb_` таблици имат RLS и policies, а четирите собствени migration версии съвпадат с cloud history.
 
 `npm run check:live` проверява публичните clean и `.html` URL адреси, document language, правилния HTML entry, 404 и JS/CSS resources. Няма Auth credentials и не променя данни. Отрицателна локална проверка с нарочно грешен server потвърждава, че командата отказва грешен HTML entry, фалшив 404 и HTML, върнат вместо JS/CSS. Броят проверки за текущия build е 24.
 
